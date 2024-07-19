@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser")
 require("dotenv").config()
 
 const app = express()
-app.use(express.json)
+app.use(express.json())
 app.use(express.static("dist"))
 app.use(cors({
     origin: process.env.NODE_ENV === "development"
@@ -13,6 +13,7 @@ app.use(cors({
         : process.env.LIVE_SERVER,
     credentials: true
 }))
+app.use("/api/auth", require("./routes/auth.routes"))
 app.use("*", (req, res,) => {
     res.status(404).json({ message: "resorce not found" })
 })
