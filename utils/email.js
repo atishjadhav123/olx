@@ -10,7 +10,7 @@ const sendEmail = ({ to, subject, message }) => new Promise((resolve, reject) =>
     })
 
     transport.sendMail({
-        from,
+        from: process.env.FROM_EMAIL,
         to,
         subject,
         message,
