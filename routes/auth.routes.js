@@ -7,4 +7,10 @@ router
     .post("/verify-admin-otp", authController.verifyOTP)
     .post("/logout-admin", authController.logoutAdmin)
 
+
+    .post("/login-mobail-user", authController.loginUser)
+    .post("/register-mobail-user", authController.regiterUser)
+    .post("/logout-mobail-user", authController.logoutUser)
+
 module.exports = router
+

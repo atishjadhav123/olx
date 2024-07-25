@@ -12,55 +12,55 @@ const asyncHandler = require("express-async-handler")
 const validator = require("validator")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-const { checkEmpty } = require("../utils/checkEmpty")
 const Admin = require("../models/Admin")
 const sendEmail = require("../utils/email")
-const { promises } = require("nodemailer/lib/xoauth2")
+const { checkEmpty } = require("../utils/checkEmpty")
+const User = require("../models/User")
 
 exports.registerAdmin = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body
     const { isError, error } = checkEmpty({ name, email, password })
+
     if (isError) {
         return res.status(400).json({ message: "All Feilds Required", error })
     }
+
     if (!validator.isEmail(email)) {
-        return res.status(400).json({ message: "Invalid Email" })
+        return res.status(400).json({ message: "Invaild Email" })
     }
     // if (!validator.isStrongPassword(password)) {
-    //     return res.status(400).json({ message: "Provide Strong  Password" })
+    //     return res.status(400).json({ message: "Provide strong Password" })
     // }
-    const isFound = await Admin.findOne({ email })
-    if (isFound) {
-        return res.status(400).json({ message: "email alredy registred with us" })
+    const IsFound = await Admin.findOne({ email })
+    if (IsFound) {
+        return res.status(400).json({ messsage: "Email Alerdy Registerd With Us" })
     }
     const hash = await bcrypt.hash(password, 10)
     await Admin.create({ name, email, password: hash })
+    res.json({ message: " Register Success" })
 
-    res.json({ message: "register succsess" })
 })
 
 exports.loginAdmin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
     const { isError, error } = checkEmpty({ email, password })
     if (isError) {
-        return res.status(401).json({ message: "All fields required", error })
+        return res.status(401).json({ message: "All Fields Requpred", error })
     }
     if (!validator.isEmail(email)) {
-        return res.status(401).json({ message: "Invalid Email" })
+        return res.status(401).json({ message: "Indivaid Email" })
+
     }
     const result = await Admin.findOne({ email })
     if (!result) {
-        return res.status(401).json({ message: "Email not found" })
+        return res.status(401).json({ messsage: process.env.NODE_ENV === "devlopment" ? "invaild Email" : "invaild Creaditals" })
     }
-    const isVerify = await bcrypt.compare(password, result.password)
+    const verify = await bcrypt.compare(password, result.password)
 
-    if (!isVerify) {
-        return res.status(401).json({
-            message: process.env.MODE_ENV === "development" ?
-                "invalid password" : "Invalid Credentials"
-        })
+    if (!verify) {
+        return res.status(401).json({ messsage: process.env.NODE_ENV === "devlopment" ? "invaild Password" : "invaild Creaditals" })
     }
-    // send otp
+    //send otp
     const otp = Math.floor(10000 + Math.random() * 900000)//nanoid
 
     await Admin.findByIdAndUpdate(result._id, { otp })
@@ -73,24 +73,21 @@ exports.loginAdmin = asyncHandler(async (req, res) => {
 
     res.json({ message: "Credentials Verify Success. OTP send to your registred email." })
 })
-
 exports.verifyOTP = asyncHandler(async (req, res) => {
     const { otp, email } = req.body
-    const { } = checkEmpty({ otp, email })
-    if (!validator.isEmail(email)) {
-        return res.status(401).json({ message: "Invalid Email" })
+    const { isError, error } = checkEmpty({ otp, email })
+    if (isError) {
+        return res.status(401).json({ message: "All Fields Requpred", error })
     }
-
+    if (!validator.isEmail(email)) {
+        return res.status(401).json({ message: "Indivaid Email" })
+    }
     const result = await Admin.findOne({ email })
-
     if (!result) {
-        return res.status(401).json({
-            message: process.env.MODE_ENV === "Dvelopment" ?
-                "invalid password" : "Invalid Credentials"
-        })
+        return res.status(401).json({ messsage: process.env.NODE_ENV === "devlopment" ? "Invaild Email" : "Invaild Creaditals" })
     }
     if (otp !== result.otp) {
-        return res.status(401).json({ message: "Invalid OTP" })
+        return res.status(401).json({ message: "Indivaid OTP" })
     }
     const token = jwt.sign({ userId: result._id }, process.env.JWT_KEY, { expiresIn: "1d" })
     // JWT
@@ -99,22 +96,87 @@ exports.verifyOTP = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production"
     })
-    //Cookie
+    // cookie
     res.json({
         message: "OTP Verify Success.", result: {
             _id: result._id,
             name: result.name,
             email: result.email
-
-
         }
-    }
+    })
+    // res
 
-    )
-    //Res
 })
+
 
 exports.logoutAdmin = asyncHandler(async (req, res) => {
     res.clearCookie("admin")
     res.json({ message: "Admin Logout Success" })
+})
+
+
+exports.regiterUser = asyncHandler(async (req, res) => {
+    const { name, mobile, email, password, cpassword } = req.body
+    const { error, isError } = checkEmpty({
+        name,
+        mobile,
+        email,
+        password,
+        cpassword
+    })
+    if (isError) {
+        return res.status(400).json({ message: "All Fields Required" })
+    }
+    if (!validator.isEmail(email)) {
+        return res.status(400).json({ message: "invaild Email " })
+    }
+    if (!validator.isMobilePhone(mobile, "en-IN")) {
+        return res.status(400).json({ message: "invaild mobile " })
+    }
+
+    if (!validator.isStrongPassword(password)) {
+        return res.status(400).json({ message: "provide Strong password " })
+    }
+    if (!validator.isStrongPassword(cpassword)) {
+        return res.status(400).json({ message: "provide Strong Conform password " })
+    }
+    if (password !== cpassword) {
+        return res.status(400).json({ message: "password Do Not Match" })
+    }
+
+    const hash = await bcrypt.hash(password, 10)
+    await User.create({ name, mobile, email, password: hash })
+
+    res.status(200).json({ message: "user Register Success" })
+
+
+})
+
+
+exports.loginUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body
+    const { isError, error } = checkEmpty({ email, password })
+    if (isError) {
+        return res.status(401).json({ message: "All Fields Requpred", error })
+    }
+    const result = await User.findOne({ email })
+    if (!result) {
+        return res.status(401).json({ message: "Email not Found" })
+    }
+    const verify = await bcrypt.compare(password, result.password)
+    if (!verify) {
+        return res.status(401).json({ message: "password Do Not Match" })
+    }
+    const token = jwt.sign({ userId: result._id }, process.env.JWT_KEY, { expiresIn: "180d" })
+    res.cookie("user", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 1000 * 60 * 60 * 24 * 180
+    })
+    res.json({ messsage: "user Register Success" })
+})
+
+exports.logoutUser = asyncHandler(async (req, res) => {
+    res.clearCookie("user")
+    res.json({ message: "Admin Logout Success" })
 })
