@@ -10,5 +10,6 @@ exports.userProtected = (req, res, next) => {
             return res.status(401).json({ message: "jwt Error", error: err.message })
         }
         req.loggedInUser = decode.userId
+        next()
     })
 }
