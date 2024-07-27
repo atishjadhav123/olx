@@ -8,6 +8,9 @@ exports.VerifyUserEmail = asyncHandler(async (req, res) => {
         return res.status(401).json({ message: "You are Not Logged in Please Login Again" })
     }
     const otp = Math.floor(10000 + Math.random() * 900000)
+    console.log("--*---**---");
+    console.log(otp);
+    console.log("--*---**---");
     await User.findByIdAndUpdate(req.loggedInUser, { emailCode: otp })
     await sendEmail({
         to: result.email,
