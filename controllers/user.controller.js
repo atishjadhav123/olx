@@ -1,22 +1,20 @@
 const asyncHandler = require("express-async-handler")
-const User = require("../models/User")
 const sendEmail = require("../utils/email")
+const User = require("../models/User")
 
-exports.verifyUserEmail = asyncHandler(async (req, res) => {
+exports.VerifyUserEmail = asyncHandler(async (req, res) => {
     const result = await User.findById(req.loggedInUser)
     if (!result) {
-        return res.status(401).json({ message: "You Are Not Logged In.Plese LOgin Again" })
+        return res.status(401).json({ message: "You are Not Logged in Please Login Again" })
     }
     const otp = Math.floor(10000 + Math.random() * 900000)
     await User.findByIdAndUpdate(req.loggedInUser, { emailCode: otp })
-    const isSend = await sendEmail({
+    await sendEmail({
         to: result.email,
         subject: "Verify Email",
-        message: `<p>your otp${otp}</p>`
+        message: ` <h1> your OTP is ${otp}</h1>`
     })
-
-
-    res.json({ message: "Verification Send Success" })
+    res.json({ message: "Verify User Email Success" })
 })
 
 exports.verifyEmailOTP = asyncHandler(async (req, res) => {
