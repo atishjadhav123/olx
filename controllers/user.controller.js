@@ -9,14 +9,13 @@ exports.VerifyUserEmail = asyncHandler(async (req, res) => {
     }
     const otp = Math.floor(10000 + Math.random() * 900000)
     await User.findByIdAndUpdate(req.loggedInUser, { emailCode: otp })
+    console.log(result);
     await sendEmail({
-        to: result.email,
-        subject: "Verify Email",
-        message: `<h1> your OTP is ${otp}</h1>`
-    })
-    console.log("--*---**---");
-    console.log(otp);
-    console.log("--*---**---");
+        to: result.email, subject: `Email OTP`, message: `
+        <h1>Do Not Share Your Account OTP </h1>
+        <p>your login otp ${otp}</p>
+        `})
+
     res.json({ message: "Verify User Email Success" })
 })
 
