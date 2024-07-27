@@ -185,7 +185,9 @@ exports.loginUser = asyncHandler(async (req, res) => {
             email: result.email,
             mobail: result.mobail,
             avatar: result.avatar,
-            verified: result.verified
+            verified: result.verified,
+            emailverified: result.verified,
+            mobailverified: result.verified
         }
     })
 })

@@ -12,7 +12,7 @@ exports.VerifyUserEmail = asyncHandler(async (req, res) => {
     await sendEmail({
         to: result.email,
         subject: "Verify Email",
-        message: ` <h1> your OTP is ${otp}</h1>`
+        message: `<h1> your OTP is ${otp}</h1>`
     })
     res.json({ message: "Verify User Email Success" })
 })
