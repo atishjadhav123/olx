@@ -13,7 +13,7 @@ const sendEmail = ({ to, subject, message }) => new Promise((resolve, reject) =>
         from: process.env.FROM_EMAIL,
         to,
         subject,
-        message,
+        text: message,
         html: message
     }, err => {
         if (err) {
