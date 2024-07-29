@@ -51,6 +51,20 @@ exports.verifyMobilOTP = asyncHandler(async (req, res) => {
     if (otp !== result.mobailcode) {
         return res.status(400).json({ message: "INvalid OTP" })
     }
-    await User.findByIdAndUpdate(req.loggedInUser, { emailverified: true })
-    res.json({ message: "Email Verify Success" })
+    const updatedUser = await User.findByIdAndUpdate(
+        req.loggedInUser,
+        { emailverified: true },
+        { new: true })
+    res.json({
+        message: "Email Verify Success", result: {
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            mobail: updatedUser.mobail,
+            avatar: updatedUser.avatar,
+            emailverified: updatedUser.emailverified,
+            mobailverified: updatedUser.mobailverified
+        }
+
+    })
 })
