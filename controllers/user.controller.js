@@ -71,12 +71,12 @@ exports.verifyMobilOTP = asyncHandler(async (req, res) => {
 })
 exports.addPost = asyncHandler(async (req, res) => {
 
-    const { title, desc, price, images, location } = req.body
-    const { error, isError } = checkEmpty({ title, desc, price, images, location })
+    const { title, desc, price, images, location, category } = req.body
+    const { error, isError } = checkEmpty({ title, desc, price, images, location, category })
     if (isError) {
         return res.status(400).json({ message: "All feild Required", error })
     }
     // modify this code
-    await Posts.create({ title, desc, price, images, location, user: req.loggedInUser })
+    await Posts.create({ title, desc, price, images, location, category, user: req.loggedInUser })
     res.json({ message: "Post Create success" })
 })
