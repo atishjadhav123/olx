@@ -89,33 +89,28 @@ exports.verifyMobilOTP = asyncHandler(async (req, res) => {
 //     res.json({ message: "Post Create success" })
 // })
 
-exports.getLocation = asyncHandler(async (req, res) => {
+exports.getLocaton = asyncHandler(async (req, res) => {
     const { gps } = req.body
     const { isError, error } = checkEmpty({ gps })
-    if (isError) {
-        return res.status(400).json({ message: "All fields are required", error })
-    }
-    const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?key=${process.env.OPEN_CAGE_API_KEY}&q=${gps.latitude}+${gps.longitude}&pretty=1&no_annotations=1`);
-    const x = await response.json();
 
-    res.json({ message: "Location fetch Success", result: x.results[0].formatted })
+    if (isError) {
+        return res.status(400).json({ message: "all Fields Requred", error })
+    }
+
+    // open as
+    const responce = await fetch(`https://api.opencagedata.com/geocode/v1/json?key=${process.env.OPEN_CAGE_API_KEY}=${gps.latitude}+${gps.longitude}&pretty=1&no_annotations=1`)
+    const x = await responce.json()
+    console.log(x);
+
+    res.json({ message: "Location fetch success", result: x.results[0].formatted })
 })
 
 exports.addPost = asyncHandler(async (req, res) => {
-    const { title, desc, price, images, location, category, gps } = req.body;
-    const { error, isError } = checkEmpty({ title, desc, price, images, location, category });
-
+    const { title, desc, price, images, location, category } = req.body
+    const { error, isError } = checkEmpty({ title, desc, price, images, location, category })
     if (isError) {
-        return res.status(400).json({ message: "All fields are required", error });
+        return res.status(400).json({ message: "All Fields Required" })
     }
-
-    if (gps) {
-        // API call to OpenCage Data with corrected URL format
-
-    }
-
-    // Modify this code as needed
-    // await Posts.create({ title, desc, price, images, location, category, user: req.loggedInUser });
-    res.json({ message: "Post Create success" });
-});
-
+    // await Posts.create({ title, desc, price, images, location, user: req.loggedInUser, category })
+    res.json({ message: "Post Create Successs" })
+})
