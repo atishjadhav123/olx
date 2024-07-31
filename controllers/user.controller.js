@@ -54,7 +54,7 @@ exports.verifyMobilOTP = asyncHandler(async (req, res) => {
     }
     const updatedUser = await User.findByIdAndUpdate(
         req.loggedInUser,
-        { emailverified: true },
+        { mobailverified: true },
         { new: true })
     res.json({
         message: "Email Verify Success", result: {
