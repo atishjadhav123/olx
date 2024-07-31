@@ -70,21 +70,42 @@ exports.verifyMobilOTP = asyncHandler(async (req, res) => {
 
     })
 })
-exports.addPost = asyncHandler(async (req, res) => {
+// exports.addPost = asyncHandler(async (req, res) => {
 
-    const { title, desc, price, images, location, category, gps } = req.body
-    const { error, isError } = checkEmpty({ title, desc, price, images, location, category })
+//     const { title, desc, price, images, location, category, gps } = req.body
+//     const { error, isError } = checkEmpty({ title, desc, price, images, location, category })
+//     if (isError) {
+//         return res.status(400).json({ message: "All feild Required", error })
+//     }
+//     if (gps) {
+//         //api call to openCagedata
+//         const responce = await fetch(`https://api.opencagedata.com/geocode/v1/json?key=${process.env.OPEN_CAGE_API_KEY}=
+//             ${location.latitude}+${location.longitude}&pretty=1&no_annotations=1)`)
+//         const x = await responce.json()
+//         console.log(x)
+//     }
+//     // modify this code
+//     // await Posts.create({ title, desc, price, images, location, category, user: req.loggedInUser })
+//     res.json({ message: "Post Create success" })
+// })
+
+exports.addPost = asyncHandler(async (req, res) => {
+    const { title, desc, price, images, location, category, gps } = req.body;
+    const { error, isError } = checkEmpty({ title, desc, price, images, location, category });
+
     if (isError) {
-        return res.status(400).json({ message: "All feild Required", error })
+        return res.status(400).json({ message: "All fields are required", error });
     }
+
     if (gps) {
-        //api call to openCagedata
-        const responce = await fetch(`https://api.opencagedata.com/geocode/v1/json?key=${process.env.OPEN_CAGE_API_KEY}=
-            ${location.latitude}+${location.longitude}&pretty=1&no_annotations=1)`)
-        const x = await responce.json()
-        console.log(x)
+        // API call to OpenCage Data with corrected URL format
+        const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?key=${process.env.OPEN_CAGE_API_KEY}&q=${location.latitude}+${location.longitude}&pretty=1&no_annotations=1`);
+        const x = await response.json();
+        console.log(x);
     }
-    // modify this code
-    // await Posts.create({ title, desc, price, images, location, category, user: req.loggedInUser })
-    res.json({ message: "Post Create success" })
-})
+
+    // Modify this code as needed
+    // await Posts.create({ title, desc, price, images, location, category, user: req.loggedInUser });
+    res.json({ message: "Post Create success" });
+});
+
