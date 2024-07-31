@@ -89,6 +89,18 @@ exports.verifyMobilOTP = asyncHandler(async (req, res) => {
 //     res.json({ message: "Post Create success" })
 // })
 
+exports.getLocation = asyncHandler(async (req, res) => {
+    const { gps } = req.body
+    const { isError, error } = checkEmpty({ gps })
+    if (isError) {
+        return res.status(400).json({ message: "All fields are required", error })
+    }
+    const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?key=${process.env.OPEN_CAGE_API_KEY}&q=${gps.latitude}+${gps.longitude}&pretty=1&no_annotations=1`);
+    const x = await response.json();
+
+    res.json({ message: "Location fetch Success", result: x.results[0].formatted })
+})
+
 exports.addPost = asyncHandler(async (req, res) => {
     const { title, desc, price, images, location, category, gps } = req.body;
     const { error, isError } = checkEmpty({ title, desc, price, images, location, category });
@@ -99,9 +111,7 @@ exports.addPost = asyncHandler(async (req, res) => {
 
     if (gps) {
         // API call to OpenCage Data with corrected URL format
-        const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?key=${process.env.OPEN_CAGE_API_KEY}&q=${location.latitude}+${location.longitude}&pretty=1&no_annotations=1`);
-        const x = await response.json();
-        console.log(x);
+
     }
 
     // Modify this code as needed
