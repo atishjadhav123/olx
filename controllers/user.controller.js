@@ -106,11 +106,15 @@ exports.getLocaton = asyncHandler(async (req, res) => {
 })
 
 exports.addPost = asyncHandler(async (req, res) => {
-    const { title, desc, price, images, location, category } = req.body
-    const { error, isError } = checkEmpty({ title, desc, price, images, location, category })
-    if (isError) {
-        return res.status(400).json({ message: "All Fields Required" })
-    }
-    // await Posts.create({ title, desc, price, images, location, user: req.loggedInUser, category })
-    res.json({ message: "Post Create Successs" })
+    upload(req, res, async err => {
+        const { title, desc, price, location, category } = req.body
+        const { error, isError } = checkEmpty({ title, desc, price, location, category })
+        if (isError) {
+            return res.status(400).json({ message: "All Fields Required", error })
+        }
+        console.log(req.files);
+
+        // await Posts.create({ title, desc, price, images, location, user: req.loggedInUser, category })
+        res.json({ message: "Post Create Successs" })
+    })
 })
