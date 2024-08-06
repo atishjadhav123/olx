@@ -4,6 +4,7 @@ const sendEmail = require("../utils/email")
 const { sendSMS } = require("../utils/sms")
 const Posts = require("../models/Posts")
 const { checkEmpty } = require("../utils/checkEmpty")
+const upload = require("../utils/upload")
 
 exports.VerifyUserEmail = asyncHandler(async (req, res) => {
     const result = await User.findById(req.loggedInUser)
