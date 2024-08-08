@@ -5,6 +5,7 @@ const { sendSMS } = require("../utils/sms")
 const Posts = require("../models/Posts")
 const { checkEmpty } = require("../utils/checkEmpty")
 const upload = require("../utils/upload")
+const cloudinary = require("../utils/cloudinary.config")
 
 exports.VerifyUserEmail = asyncHandler(async (req, res) => {
     const result = await User.findById(req.loggedInUser)
@@ -114,8 +115,28 @@ exports.addPost = asyncHandler(async (req, res) => {
             return res.status(400).json({ message: "All Fields Required", error })
         }
         console.log(req.files);
+        const images = []
+        for (const item of req.files) {
+            const { secure_url } = await cloudinary.uploader.upload(item.path)
+            images.push(secure_url)
+        }
 
-        // await Posts.create({ title, desc, price, images, location, user: req.loggedInUser, category })
+        await Posts.create({
+            title,
+            desc,
+            price,
+            images,
+            location,
+            user: req.loggedInUser,
+            category
+        })
         res.json({ message: "Post Create Successs" })
     })
 })
+exports.getAllPost = asyncHandler(async (req, res) => {
+    const result = await Posts.find()
+    res.json({ message: "post fetch success", result })
+
+})
+
+

@@ -12,5 +12,6 @@ router
     .post("/verify-user-mobile", userProtected, userController.verifyUserMobile)
     .post("/add-post", userProtected, userController.addPost)
     .post("/get-location", userProtected, userController.getLocaton)
+    .post("/posts", userController.getAllPost)
 
 module.exports = router
